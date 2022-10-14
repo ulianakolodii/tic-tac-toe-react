@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
+import {Routes, Route} from "react-router-dom";
+import {PlayerVsComputer} from "./routes";
+import {PlayerVsPlayer} from "./routes";
+import {ComputerVsComputer} from "./routes";
 import {} from "../src/App.css";
 import Button from "./components/Button/Button";
 import Box from "./components/Box/Box";
+const getRandomNumberTo = (to = 8) => Math.floor(Math.random() * to + 1) - 1;
 
 const matchDiagonalLeft = (arr, value = "X") => {
   return arr[0] === value && arr[4] === value && arr[8] === value;
@@ -51,14 +56,26 @@ function App() {
   const toggleCurrent = () =>
     setCurrent((prevCurrent) => (prevCurrent === "X" ? "O" : "X"));
 
-  const createHandler = (index) => () => {
-    const magicFn = (prevState) => {
+  // const createPPHandler = (index) => () => {
+  //   setState((prevState) => {
+  //     const newState = [...prevState];
+  //     newState[index] = current;
+  //     toggleCurrent();
+  //     return newState;);
+  // };
+
+  const createPCHandler = () => () => {
+    setState((prevState) => {
       const newState = [...prevState];
-      newState[index] = current;
-      toggleCurrent();
-      return newState;
-    };
-    setState(magicFn);
+      const availableBoxes = newState.map((value, index) => ({ value, index })).filter(({ value }) => value === undefined);
+      console.log(availableBoxes);
+      const randomIndex = getRandomNumberTo(availableBoxes.length - 1);
+      console.log(randomIndex);
+      const superIndex = availableBoxes[randomIndex].index;
+        newState[superIndex] = current;
+        toggleCurrent();
+        return newState;}
+    );
   };
 
   useEffect(() => {
@@ -72,14 +89,20 @@ function App() {
 
   return (
     <div className="App">
+      <Routes>
+        <Route path="/" element={<PlayerVsComputer />}/>
+        <Route path="/" element={<PlayerVsPlayer />}/>
+        <Route path="/" element={<ComputerVsComputer />}/>
+      </Routes>
       <div className="buttons_container">
         <Button>Computer VS Computer</Button>
         <Button>Player VS Computer</Button>
         <Button>Player VS Player</Button>
       </div>
       <div className="grid_container">
-        {state.map((value, index) => (
-          <Box onClick={createHandler(index)}>{value}</Box>
+        {state.map((value) => (
+          // <Box onClick={createPPHandler(index)}>{value}</Box>
+          <Box onClick={createPCHandler()}>{value}</Box>
         ))}
       </div>
       <div className="winner_container">{winner}</div>
