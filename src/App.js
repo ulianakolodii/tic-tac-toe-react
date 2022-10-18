@@ -24,7 +24,7 @@ const matchVertical = (arr, value = "X") => {
   );
 };
 
-const matchHorizontal = (arr, row, value = "X") => {
+const matchHorizontal = (arr, value = "X") => {
   return (
     (arr[0] === value && arr[1] === value && arr[2] === value) ||
     (arr[3] === value && arr[4] === value && arr[5] === value) ||
@@ -68,14 +68,23 @@ function App() {
   // const createCCHandler = () => () => {
   //   setState((prevState) => {
   //     const newState = [...prevState];
-  //     const availableBoxes = newState.map((value, index) => ({ value, index })).filter(({ value }) => value === undefined);
+  //     const availableBoxes = newState
+  //       .map((value, index) => ({ value, index }))
+  //       .filter(({ value }) => value === undefined);
   //     const randomIndex = getRandomNumberTo(availableBoxes.length - 1);
   //     const superIndex = availableBoxes[randomIndex].index;
-  //       newState[superIndex] = current;
-  //       toggleCurrent();
-  //       return newState;}
-  //   );
+  //     newState[superIndex] = current;
+  //     toggleCurrent();
+  //     return newState;
+  //   });
   // };
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     createCCHandler()();
+  //   }, 500);
+  //   return () => clearInterval(interval);
+  // }, [createCCHandler]);
 
    const createPCHandler = (index) => () => {
     setState((prevState) => {
