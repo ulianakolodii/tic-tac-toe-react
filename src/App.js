@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-// import {Routes, Route} from "react-router-dom";
-// import {PlayerVsComputer} from "./routes";
-// import {PlayerVsPlayer} from "./routes";
-// import {ComputerVsComputer} from "./routes";
+// import { Routes, Route } from "react-router-dom";
+// import { PlayerVsComputer } from "./routes";
+// import { PlayerVsPlayer } from "./routes";
+// import { ComputerVsComputer } from "./routes";
 import {} from "../src/App.css";
 import Button from "./components/Button/Button";
 import Box from "./components/Box/Box";
+import { useCallback } from "react";
 const getRandomNumberTo = (to = 8) => Math.floor(Math.random() * to + 1) - 1;
 
 const matchDiagonalLeft = (arr, value = "X") => {
@@ -53,11 +54,14 @@ function App() {
     undefined,
   ]);
 
-  const toggleCurrent = () =>
-    setCurrent((prevCurrent) => (prevCurrent === "X" ? "O" : "X"));
+  // const toggleCurrent = () =>
+  //   setCurrent((prevCurrent) => (prevCurrent === "X" ? "O" : "X"));
 
   // const createPPHandler = (index) => () => {
   //   setState((prevState) => {
+  //     if (winner || !state.includes(undefined)) {
+  //       return prevState;
+  //     }
   //     const newState = [...prevState];
   //     newState[index] = current;
   //     toggleCurrent();
@@ -71,6 +75,9 @@ function App() {
   //     const availableBoxes = newState
   //       .map((value, index) => ({ value, index }))
   //       .filter(({ value }) => value === undefined);
+  //     if (winner || !availableBoxes.length) {
+  //       return prevState;
+  //     }
   //     const randomIndex = getRandomNumberTo(availableBoxes.length - 1);
   //     const superIndex = availableBoxes[randomIndex].index;
   //     newState[superIndex] = current;
@@ -86,17 +93,25 @@ function App() {
   //   return () => clearInterval(interval);
   // }, [createCCHandler]);
 
-   const createPCHandler = (index) => () => {
-    setState((prevState) => {
-      const newState = [...prevState];
-      newState[index] = "X";
-      const availableBoxes = newState.map((value, index) => ({ value, index })).filter(({ value }) => value === undefined);
-      const randomIndex = getRandomNumberTo(availableBoxes.length - 1);
-      const superIndex = availableBoxes[randomIndex].index;
+  const createPCHandler = useCallback(
+    (index) => () => {
+      setState((prevState) => {
+        const newState = [...prevState];
+        newState[index] = "X";
+        const availableBoxes = newState
+          .map((value, index) => ({ value, index }))
+          .filter(({ value }) => value === undefined);
+        if (winner || !availableBoxes.length) {
+          return prevState;
+        }
+        const randomIndex = getRandomNumberTo(availableBoxes.length - 1);
+        const superIndex = availableBoxes[randomIndex].index;
         newState[superIndex] = "O";
-        return newState;}
-    );
-  };
+        return newState;
+      });
+    },
+    [winner]
+  );
 
   useEffect(() => {
     if (isWinner(state, "X")) {
@@ -110,9 +125,9 @@ function App() {
   return (
     <div className="App">
       {/* <Routes>
-        <Route path="/" element={<PlayerVsComputer />}/>
-        <Route path="/" element={<PlayerVsPlayer />}/>
-        <Route path="/" element={<ComputerVsComputer />}/>
+        <Route path="/" element={<PlayerVsComputer />} />
+        <Route path="/" element={<PlayerVsPlayer />} />
+        <Route path="/" element={<ComputerVsComputer />} />
       </Routes> */}
       <div className="buttons_container">
         <Button>Computer VS Computer</Button>
@@ -121,9 +136,11 @@ function App() {
       </div>
       <div className="grid_container">
         {state.map((value, index) => (
-          // <Box onClick={createPPHandler(index)}>{value}</Box>
-          // <Box onClick={createCCHandler()}>{value}</Box>
-          <Box onClick={createPCHandler(index)}>{value}</Box>
+          <>
+            {/* <Box onClick={createPPHandler(index)}>{value}</Box>
+            <Box onClick={createCCHandler()}>{value}</Box> */}
+            <Box onClick={createPCHandler(index)}>{value}</Box>
+          </>
         ))}
       </div>
       <div className="winner_container">{winner}</div>
